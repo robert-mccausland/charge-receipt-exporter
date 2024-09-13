@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import { MongoClient, ServerApiVersion } from "mongodb";
-import { getNewReceipts } from "./src/receipt-service.js";
+import { ReceiptService } from "./src/receipt-service.js";
 import { ReceiptRepository } from "./src/receipt-repository.js";
 
 config();
@@ -14,18 +14,26 @@ const client = new MongoClient(process.env.MONGO_URI, {
   },
 });
 
+/**
+ * Main function
+ */
 async function main() {
-  let pollingRate = parseFloat(process.env.POLLING_RATE);
+  const receiptsService = new ReceiptService();
+  const pollingRate = parseFloat(process.env.POLLING_RATE);
   console.info(`Polling for new receipts every ${pollingRate} seconds, press Ctrl+C to stop`);
 
   // Run immediately to get fast feedback
-  await updateReceipts();
+  await updateReceipts(receiptsService);
 
   // Create job to update receipt periodically
-  setInterval(() => updateReceipts(), pollingRate * 1000);
+  setInterval(() => updateReceipts(receiptsService), pollingRate * 1000);
 }
 
-async function updateReceipts() {
+/**
+ * Sync the database with any new receipts from the API
+ * @param {ReceiptService} receiptsService
+ */
+async function updateReceipts(receiptsService) {
   try {
     const start = performance.now();
     console.info("Checking for new receipts...");
@@ -42,7 +50,7 @@ async function updateReceipts() {
     let lastReceiptTime = lastReceipt?.receipt?.stoppedOn || new Date().getTime();
 
     // Pull any new receipts from the API
-    const receipts = await getNewReceipts(lastReceiptTime);
+    const receipts = await receiptsService.getNewReceipts(lastReceiptTime);
 
     // Insert new receipts into the database
     await repository.insertReceipts(receipts);
