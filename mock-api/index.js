@@ -25,10 +25,12 @@ router.get("/charge-receipt", (req, res) => {
 });
 
 router.post("/login", (req, res) => {
+  console.log(req.body);
   const { username, password } = req.body;
   const token = `${username}:${password}`;
   res.send({ token });
 });
 
+app.use(express.json());
 app.use("/api/v1", router);
 app.listen(8000);

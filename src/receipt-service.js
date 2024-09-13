@@ -1,4 +1,4 @@
-import { Axios } from "axios";
+import axios from "axios";
 /**
  * Gets all receipts that were stopped after the parameter `lastDate`.
  * @param {number} lastDate
@@ -7,20 +7,18 @@ import { Axios } from "axios";
 
 export class ReceiptService {
   constructor() {
-    this.axios = new Axios({
+    this.axios = axios.create({
       baseURL: process.env.API_URL,
     });
   }
 
   async _login() {
     const response = await this.axios.post("/login", {
-      body: JSON.stringify({
-        username: process.env.API_USERNAME,
-        password: process.env.API_PASSWORD,
-      }),
+      username: process.env.API_USERNAME,
+      password: process.env.API_PASSWORD,
     });
 
-    this.token = response.body.token;
+    this.token = response.data.token;
   }
 
   async getNewReceipts(lastDate) {
@@ -52,9 +50,9 @@ export class ReceiptService {
         continue;
       }
 
-      const body = JSON.parse(response.data);
-      receipts.push(...body.data);
-      if (body.data.length < pageSize) {
+      const data = response.data.data;
+      receipts.push(...data);
+      if (data.length < pageSize) {
         break;
       }
 
