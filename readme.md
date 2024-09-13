@@ -4,7 +4,14 @@ Exports receipts from an API into a mongodb database by polling the API periodic
 
 ## Getting started
 
-Run the following commands to setup the repository
+Clone the repository:
+
+```
+git clone https://github.com/robert-mccausland/charge-receipt-exporter.git
+cd charge-receipt-exporter
+```
+
+Run the following commands to setup the repository:
 
 ```
 cp .env.example .env
@@ -14,10 +21,12 @@ npm install
 
 Put the URI for your MongoDB database into the `.env` file, and also update the api url.
 
+Start the application:
+
 ```
 npm start
 ```
 
 ## Mock API
 
-If you want to run the mock-api then you can start it by running `node ./mock-api/index.js`
+If you want to run the mock-api then you can start it by running `node ./mock-api/index.js`.
